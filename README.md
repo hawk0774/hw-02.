@@ -21,7 +21,7 @@
 
 ![alt text](https://raw.githubusercontent.com/hawk0774/hw-02./main/Screenshot_15.png)
 
-В результате проверки кода в блоке yandex_compute_instance" "platform найдены следующие ошибки и исправлены:
+В результате проверки кода в блоке yandex_compute_instance" найдены следующие ошибки и исправлены:
 
 * В строке platform_id = "standart-v4" правильно писать standard
 * Версии v4 нет, могут быть только v1, v2 и v3.
