@@ -1,6 +1,6 @@
 # «Основы Terraform. Yandex Cloud»
 
-## Задание 1
+### Задание 1
 В качестве ответа всегда полностью прикладывайте ваш terraform-код в git. Убедитесь что ваша версия Terraform ~>1.8.4
 
 1. Изучите проект. В файле variables.tf объявлены переменные для Yandex provider.
@@ -16,3 +16,21 @@
 * скриншот ЛК Yandex Cloud с созданной ВМ, где видно внешний ip-адрес;
 * скриншот консоли, curl должен отобразить тот же внешний ip-адрес;
 * ответы на вопросы.
+
+## Решение
+
+![alt text](https://raw.githubusercontent.com/hawk0774/hw-02./main/Screenshot_15.png)
+
+В результате проверки кода в блоке yandex_compute_instance" "platform найдены следующие ошибки и исправлены:
+
+* В строке platform_id = "standart-v4" правильно писать standard
+* Версии v4 нет, могут быть только v1, v2 и v3.
+* Cores 1 не может быть, так как минимальное количество виртуальных ядер процессора для всех платформ равно двум (согласно документации).
+
+Параметры preemptible = true - это ,так называемая, прерываемая ВМ, т.е. работает не более 24 часов и может быть остановлена Compute Cloud. Параметр core_fraction = 5 - указывает базовую производительность ядра в процентах. Все эти параметры помогают экономить ресурсы.
+
+![alt text](https://raw.githubusercontent.com/hawk0774/hw-02./main/Screenshot_1.png)
+
+![alt text](https://raw.githubusercontent.com/hawk0774/hw-02./main/Screenshot_2.png)
+
+![alt text](https://raw.githubusercontent.com/hawk0774/hw-02./main/Screenshot_3.png)
