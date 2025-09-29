@@ -193,6 +193,7 @@ variable "vm_web_preemptible" {
   description = "Enable preemptible flag for the VM"
 }
  ```
+![alt text](https://raw.githubusercontent.com/hawk0774/hw-02./main/Screenshot_4.png)
 
 ### Задание 3
 
