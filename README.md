@@ -214,6 +214,7 @@ variable "vm_web_preemptible" {
 
 В качестве решения приложите вывод значений ip-адресов команды ```terraform output```.
 
+![alt text](https://raw.githubusercontent.com/hawk0774/hw-02./main/Screenshot_7.png)
 
 ### Задание 5
 
