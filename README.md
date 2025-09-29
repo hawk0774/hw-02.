@@ -408,5 +408,6 @@ resource "yandex_compute_instance" "platform_db" {
   }
 }
 ```
+![alt text](https://raw.githubusercontent.com/hawk0774/hw-02./main/Screenshot_9.png)
 
 ------
