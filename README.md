@@ -41,6 +41,158 @@
 2. Объявите нужные переменные в файле variables.tf, обязательно указывайте тип переменной. Заполните их **default** прежними значениями из main.tf. 
 3. Проверьте terraform plan. Изменений быть не должно. 
 
+* main.tf
+   ```
+   resource "yandex_vpc_network" "develop" {
+    name = var.vpc_name
+   }
+   resource "yandex_vpc_subnet" "develop" {
+    name           = var.vpc_name
+    zone           = var.default_zone
+    network_id     = yandex_vpc_network.develop.id
+    v4_cidr_blocks = var.default_cidr
+   }
+
+
+   data "yandex_compute_image" "ubuntu" {
+     family = var.vm_web_image
+   }
+
+   resource "yandex_compute_instance" "platform" {
+     name        = var.vm_web_name
+     platform_id = var.vm_web_platform_id
+     resources {
+       core_fraction = var.vm_web_core_fraction
+       cores         = var.vm_web_cores
+       memory        = var.vm_web_memory
+   }
+
+   boot_disk {
+    initialize_params {
+      image_id = var.vm_web_disk
+    }
+   }
+
+   scheduling_policy {
+     preemptible = var.vm_web_preemptible
+   }
+
+   network_interface {
+     subnet_id = yandex_vpc_subnet.develop.id
+     nat       = var.vm_web_nat
+   }
+
+   metadata = {
+    "serial-port-enable" = var.vm_web_serial_port_enable
+    "ssh-keys"           = var.vm_web_vms_ssh_public_root_key
+   }
+  }
+*variables.tf   
+```
+###cloud vars
+variable "cloud_id" {
+  type        = string
+  default     = ""
+  description = "https://cloud.yandex.ru/docs/resource-manager/operations/cloud/get-id"
+}
+
+variable "folder_id" {
+  type        = string
+  default     = ""
+  description = "https://cloud.yandex.ru/docs/resource-manager/operations/folder/get-id"
+}
+
+variable "default_zone" {
+  type        = string
+  default     = "ru-central1-a"
+  description = "https://cloud.yandex.ru/docs/overview/concepts/geo-scope"
+}
+variable "default_cidr" {
+  type        = list(string)
+  default     = ["10.0.1.0/24"]
+  description = "https://cloud.yandex.ru/docs/vpc/operations/subnet-create"
+}
+
+variable "vpc_name" {
+  type        = string
+  default     = "develop"
+  description = "VPC network & subnet name"
+}
+
+
+###ssh vars
+
+variable "vm_web_vms_ssh_public_root_key" {
+  type        = string
+  default     = ""
+  description = "ssh-keygen -t ed25519"
+}
+
+variable "vm_web_name" {
+  type        = string
+  default     = "netology-develop-platform-web"
+  description = "Name of the VM"
+}
+
+variable "vm_web_platform_id" {
+  type        = string
+  default     = "standard-v1"
+  description = "Platform ID for the VM"
+}
+
+variable "vm_web_zone" {
+  type        = string
+  default     = "ru-central1-a"
+  description = "Zone where the VM will be created"
+}
+
+variable "vm_web_core_fraction" {
+  type        = number
+  default     = 5
+  description = "Core fraction for the VM"
+}
+
+variable "vm_web_cores" {
+  type        = number
+  default     = 2
+  description = "Number of cores for the VM"
+}
+
+variable "vm_web_memory" {
+  type        = number
+  default     = 1
+  description = "Memory size (in GB) for the VM"
+}
+
+variable "vm_web_image" {
+  type        = string
+  default     = "ubuntu-2004-lts"
+}
+
+variable "vm_web_disk" {
+  type        = string
+  default     = "fd8g8ldvgac83b18nvhq"
+  description = "Type of the boot disk"
+}
+
+variable "vm_web_nat" {
+  type        = bool
+  default     = true
+  description = "Enable NAT for the VM"
+}
+
+variable "vm_web_serial_port_enable" {
+  type        = string
+  default     = "1"
+  description = "Enable serial port for the VM"
+}
+
+variable "vm_web_preemptible" {
+  type        = bool
+  default     = true
+  description = "Enable preemptible flag for the VM"
+}
+ ```
 
 ### Задание 3
 
