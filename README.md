@@ -258,5 +258,155 @@ variable "vm_web_preemptible" {
   
 5. Найдите и закоментируйте все, более не используемые переменные проекта.
 6. Проверьте terraform plan. Изменений быть не должно.
+*variables.tf
+```
+###cloud vars
+variable "cloud_id" {
+  type        = string
+  default     = ""
+  description = "https://cloud.yandex.ru/docs/resource-manager/operations/cloud/get-id"
+}
+
+variable "folder_id" {
+  type        = string
+  default     = ""
+  description = "https://cloud.yandex.ru/docs/resource-manager/operations/folder/get-id"
+}
+
+variable "default_zone" {
+  type        = string
+  default     = ""
+  description = "https://cloud.yandex.ru/docs/overview/concepts/geo-scope"
+}
+variable "default_cidr" {
+  type        = list(string)
+  default     = ["10.0.1.0/24"]
+  description = "https://cloud.yandex.ru/docs/vpc/operations/subnet-create"
+}
+
+variable "vpc_name" {
+  type        = string
+  default     = "develop"
+  description = "VPC network & subnet name"
+}
+
+variable "vms_resources" {
+  type = map(map(any))
+  default = {
+    web = {
+      core_fraction = 5
+      cores         = 2
+      memory        = 1
+    }
+    db = {
+      core_fraction = 20
+      cores         = 2
+      memory        = 2
+    }
+  }
+}
+
+variable "vms_metadata" {
+  type = map(string)
+  default = {
+    "serial-port-enable" = "1"
+    "ssh-keys"           = "ubuntu:ssh-ed25519... "
+  }
+}
+```
+*main.tf
+```
+resource "yandex_vpc_network" "develop" {
+  name = var.vpc_name
+}
+resource "yandex_vpc_subnet" "develop" {
+  name           = var.vpc_name
+  zone           = var.default_zone
+  network_id     = yandex_vpc_network.develop.id
+  v4_cidr_blocks = var.default_cidr
+}
+
+
+data "yandex_compute_image" "ubuntu" {
+  family = var.vm_web_image
+}
+
+resource "yandex_compute_instance" "platform" {
+#  name        = var.vm_web_name
+  name        = local.vm_web_instance_name
+  platform_id = var.vm_web_platform_id
+
+  resources {
+    core_fraction = var.vms_resources.web.core_fraction
+    cores         = var.vms_resources.web.cores
+    memory        = var.vms_resources.web.memory
+  }
+
+  boot_disk {
+    initialize_params {
+      image_id = var.vm_web_disk
+    }
+  }
+
+  scheduling_policy {
+    preemptible = var.vm_web_preemptible
+  }
+
+  network_interface {
+    subnet_id = yandex_vpc_subnet.develop.id
+    nat       = var.vm_web_nat
+  }
+
+  metadata = var.vms_metadata
+}
+#  metadata = {
+#    "serial-port-enable" = var.vm_web_serial_port_enable
+#    "ssh-keys"           = var.vm_web_vms_ssh_public_root_key
+#  }
+#}
+
+#db
+resource "yandex_vpc_subnet" "develop_b" {
+  name           = var.vpc_name_db
+  zone           = var.vm_db_zone
+  network_id     = yandex_vpc_network.develop.id
+  v4_cidr_blocks = var.db_cidr
+}
+
+resource "yandex_compute_instance" "platform_db" {
+ # name        = var.vm_db_name
+  name        = local.vm_db_instance_name
+  platform_id = var.vm_db_platform_id
+  zone        = var.vm_db_zone
+
+  resources {
+    core_fraction = var.vms_resources.db.core_fraction
+    cores         = var.vms_resources.db.cores
+    memory        = var.vms_resources.db.memory
+  }
+
+  boot_disk {
+    initialize_params {
+      image_id = var.vm_db_disk
+    }
+  }
+
+  network_interface {
+    subnet_id = yandex_vpc_subnet.develop_b.id
+    nat       = var.vm_db_nat
+  }
+
+  #metadata = {
+  #  "serial-port-enable" = var.vm_web_serial_port_enable
+  #  "ssh-keys"           = var.vm_web_vms_ssh_public_root_key
+  #}
+
+  metadata = var.vms_metadata
+
+  scheduling_policy {
+    preemptible = var.vm_db_preemptible
+  }
+}
+```
 
 ------
