@@ -203,6 +203,10 @@ variable "vm_web_preemptible" {
 
 * ДЗ продолжил делать на след день, поэтому ip первой тачки отличается, для того чтобы запустить вторую ВМ в другой зоне доступности, ножно создать для нее отдельную подсеть соответственно.
 
+![alt text](https://raw.githubusercontent.com/hawk0774/hw-02./main/Screenshot_5.png)
+
+![alt text](https://raw.githubusercontent.com/hawk0774/hw-02./main/Screenshot_6.png)
+
 ### Задание 4
 
 1. Объявите в файле outputs.tf **один** output , содержащий: instance_name, external_ip, fqdn для каждой из ВМ в удобном лично для вас формате.(без хардкода!!!)
